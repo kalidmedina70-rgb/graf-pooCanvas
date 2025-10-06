@@ -1,8 +1,8 @@
-// Configuración del canvas
+// Canvas setup
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// ---------------- Clase Ball ----------------
+// Clase Ball (Pelota)
 class Ball {
     constructor(x, y, radius, speedX, speedY) {
         this.x = x;
@@ -24,7 +24,7 @@ class Ball {
         this.x += this.speedX;
         this.y += this.speedY;
 
-        // Colisión con bordes superior e inferior
+        // ColisiÃ³n con la parte superior e inferior
         if (this.y - this.radius <= 0 || this.y + this.radius >= canvas.height) {
             this.speedY = -this.speedY;
         }
@@ -33,11 +33,11 @@ class Ball {
     reset() {
         this.x = canvas.width / 2;
         this.y = canvas.height / 2;
-        this.speedX = -this.speedX; // Cambia dirección al resetear
+        this.speedX = -this.speedX; // Cambia direcciÃ³n al resetear
     }
 }
 
-// ---------------- Clase Paddle ----------------
+// Clase Paddle (Paleta)
 class Paddle {
     constructor(x, y, width, height, isPlayerControlled = false) {
         this.x = x;
@@ -61,7 +61,7 @@ class Paddle {
         }
     }
 
-    // Movimiento automático de la paleta (CPU)
+    // Movimiento de la paleta automÃ¡tica (IA)
     autoMove(ball) {
         if (ball.y < this.y + this.height / 2) {
             this.y -= this.speed;
@@ -71,13 +71,13 @@ class Paddle {
     }
 }
 
-// ---------------- Clase Game ----------------
+// Clase Game (Controla el juego)
 class Game {
     constructor() {
         this.ball = new Ball(canvas.width / 2, canvas.height / 2, 10, 4, 4);
         this.paddle1 = new Paddle(0, canvas.height / 2 - 50, 10, 100, true); // jugador
         this.paddle2 = new Paddle(canvas.width - 10, canvas.height / 2 - 50, 10, 100); // CPU
-        this.keys = {};
+        this.keys = {}; // Para capturar las teclas
     }
 
     draw() {
@@ -90,7 +90,7 @@ class Game {
     update() {
         this.ball.move();
 
-        // Movimiento del jugador
+        // Movimiento de la paleta 1 (Jugador) controlado por teclas
         if (this.keys['ArrowUp']) {
             this.paddle1.move('up');
         }
@@ -98,10 +98,10 @@ class Game {
             this.paddle1.move('down');
         }
 
-        // Movimiento CPU
+        // Movimiento de la paleta 2 (Controlada por IA)
         this.paddle2.autoMove(this.ball);
 
-        // Colisiones con paletas
+        // Colisiones con las paletas
         if (this.ball.x - this.ball.radius <= this.paddle1.x + this.paddle1.width &&
             this.ball.y >= this.paddle1.y && this.ball.y <= this.paddle1.y + this.paddle1.height) {
             this.ball.speedX = -this.ball.speedX;
@@ -112,12 +112,13 @@ class Game {
             this.ball.speedX = -this.ball.speedX;
         }
 
-        // Reinicio si la pelota sale del área
+        // Detectar cuando la pelota sale de los bordes (punto marcado)
         if (this.ball.x - this.ball.radius <= 0 || this.ball.x + this.ball.radius >= canvas.width) {
             this.ball.reset();
         }
     }
 
+    // Captura de teclas para el control de la paleta
     handleInput() {
         window.addEventListener('keydown', (event) => {
             this.keys[event.key] = true;
@@ -139,6 +140,6 @@ class Game {
     }
 }
 
-// Instancia del juego
+// Crear instancia del juego y ejecutarlo
 const game = new Game();
 game.run();
